@@ -1,13 +1,22 @@
 package vista;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Carlos Milena Quesada
  */
 public class PrincipalJFrame extends javax.swing.JFrame {
 
+    DefaultTableModel dtm;
+
     public PrincipalJFrame() {
         initComponents();
+        dtm = (DefaultTableModel) jTableTabla.getModel();
     }
 
     @SuppressWarnings("unchecked")
@@ -20,9 +29,11 @@ public class PrincipalJFrame extends javax.swing.JFrame {
         jTextFieldExtension = new javax.swing.JTextField();
         jButtonDirectorio = new javax.swing.JButton();
         jButtonExtension = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        jLabelInformacion = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableTabla = new javax.swing.JTable();
+        jButtonLimpCampos = new javax.swing.JButton();
+        jButtonLimpTabla = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Explorador básico");
@@ -37,13 +48,22 @@ public class PrincipalJFrame extends javax.swing.JFrame {
 
         jButtonDirectorio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/lupa.png"))); // NOI18N
         jButtonDirectorio.setPreferredSize(new java.awt.Dimension(40, 40));
+        jButtonDirectorio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDirectorioActionPerformed(evt);
+            }
+        });
 
         jButtonExtension.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/lupa.png"))); // NOI18N
         jButtonExtension.setPreferredSize(new java.awt.Dimension(40, 40));
+        jButtonExtension.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonExtensionActionPerformed(evt);
+            }
+        });
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel3.setText("jLabel3");
+        jLabelInformacion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabelInformacion.setForeground(new java.awt.Color(255, 0, 0));
 
         jTableTabla.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jTableTabla.setModel(new javax.swing.table.DefaultTableModel(
@@ -53,34 +73,67 @@ public class PrincipalJFrame extends javax.swing.JFrame {
             new String [] {
                 "Nombre", "Extensión", "Tamaño", "F/D"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTableTabla.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTableTabla);
+
+        jButtonLimpCampos.setText("Limpiar campos");
+        jButtonLimpCampos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonLimpCamposActionPerformed(evt);
+            }
+        });
+
+        jButtonLimpTabla.setText("Limpiar tabla");
+        jButtonLimpTabla.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonLimpTablaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(275, 275, 275)
-                        .addComponent(jLabel3))
+                        .addComponent(jLabelInformacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(45, 45, 45))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(42, 42, 42)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 519, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabelDirectorio)
-                                    .addComponent(jLabelExtension))
+                                .addGap(5, 5, 5)
+                                .addComponent(jLabelDirectorio)
                                 .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTextFieldDirectorio, javax.swing.GroupLayout.DEFAULT_SIZE, 393, Short.MAX_VALUE)
-                                    .addComponent(jTextFieldExtension))))
-                        .addGap(29, 29, 29)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButtonDirectorio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonExtension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(jTextFieldDirectorio, javax.swing.GroupLayout.PREFERRED_SIZE, 393, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonDirectorio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButtonLimpCampos)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabelExtension)
+                                        .addGap(16, 16, 16)
+                                        .addComponent(jTextFieldExtension, javax.swing.GroupLayout.PREFERRED_SIZE, 393, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButtonExtension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGap(0, 17, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(250, 250, 250)
+                .addComponent(jButtonLimpTabla)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -88,31 +141,121 @@ public class PrincipalJFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(55, 55, 55)
+                        .addGap(24, 24, 24)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelDirectorio)
-                            .addComponent(jTextFieldDirectorio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(44, 44, 44)
-                        .addComponent(jButtonDirectorio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jTextFieldDirectorio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(26, 26, 26))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButtonDirectorio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButtonExtension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(82, 82, 82)
+                        .addGap(9, 9, 9)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabelExtension)
-                            .addComponent(jTextFieldExtension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(72, 72, 72)
-                        .addComponent(jButtonExtension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jTextFieldExtension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelExtension))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonLimpCampos)
+                .addGap(14, 14, 14)
+                .addComponent(jLabelInformacion, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel3)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonLimpTabla)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonDirectorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDirectorioActionPerformed
+
+        File ficheroPrincipal = new File(jTextFieldDirectorio.getText());        
+        File[] subficherosEncontrados = null;
+
+        if (ficheroPrincipal.isDirectory()) {
+            subficherosEncontrados = ficheroPrincipal.listFiles();
+            jLabelInformacion.setText("La ruta indicada es de un directorio.");
+
+        } else {
+            if (ficheroPrincipal.isFile()) {
+                subficherosEncontrados = new File[]{ficheroPrincipal};
+                jLabelInformacion.setText("La ruta indicada pertenece a un "
+                        + "archivo, no un directorio. Igualmente será mostrado.");
+            } else {
+                jLabelInformacion.setText("La ruta indicada no es válida.");
+            }
+        }
+
+        /*En este punto, la colección "File[] subficherosEncontrados" tendrá uno
+        o varios "File" cuando apunta a una caperta, y tendrá solo un "File" si
+        apunta a un archivo.
+        En cualquier caso, el código para mostrar la información en la tabla es
+        el mismo, por eso uso el siguiente foreach para ambos casos.    
+         */
+        if (subficherosEncontrados != null) {
+            for (File f : subficherosEncontrados) {
+                //Obtener el nombre del fichero
+                String nomFichero = f.getName();
+
+                //Obtener la extensión del fichero
+                String tipoFichero = "";
+                int aux = nomFichero.lastIndexOf(".");//Devuelve -1 si no hay punto
+                if (aux != -1) {
+                    tipoFichero = nomFichero.substring(aux);
+                }
+
+                //Obtener el tamaño del fichero
+                long tamanio = 0;
+                try {
+                    tamanio = Files.size(f.toPath());
+                    //Files.size() es de obligatorio checkeo
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, e);
+                }
+
+                //Obtener si es un directorio o un archivo
+                String directoryOrFile = "";
+
+                if (f.isFile()) {
+                    directoryOrFile = "Es un archivo";
+                } else {
+                    directoryOrFile = "Es un directorio";
+                }
+
+                //Agregamos la información de esta fila al Modal de la tabal
+                dtm.addRow(new String[]{nomFichero, tipoFichero, String.valueOf(tamanio), directoryOrFile});
+            }
+
+        }
+    }//GEN-LAST:event_jButtonDirectorioActionPerformed
+
+    private void jButtonExtensionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExtensionActionPerformed
+        String extension = jTextFieldExtension.getText();
+
+        for (int i = jTableTabla.getRowCount() - 1; i >= 0; i--) {
+
+            String celda = (String) jTableTabla.getValueAt(i, 1);
+
+            if (!celda.equals(extension) && !celda.equals("." + extension)) {
+                dtm.removeRow(i);
+            }
+        }
+    }//GEN-LAST:event_jButtonExtensionActionPerformed
+
+    private void jButtonLimpCamposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLimpCamposActionPerformed
+        jTextFieldDirectorio.setText("");
+        jTextFieldExtension.setText("");
+    }//GEN-LAST:event_jButtonLimpCamposActionPerformed
+
+    private void jButtonLimpTablaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLimpTablaActionPerformed
+        for (int i = jTableTabla.getRowCount() - 1; i >= 0; i--) {
+            dtm.removeRow(i);
+        }
+    }//GEN-LAST:event_jButtonLimpTablaActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -149,9 +292,11 @@ public class PrincipalJFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonDirectorio;
     private javax.swing.JButton jButtonExtension;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JButton jButtonLimpCampos;
+    private javax.swing.JButton jButtonLimpTabla;
     private javax.swing.JLabel jLabelDirectorio;
     private javax.swing.JLabel jLabelExtension;
+    private javax.swing.JLabel jLabelInformacion;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableTabla;
     private javax.swing.JTextField jTextFieldDirectorio;

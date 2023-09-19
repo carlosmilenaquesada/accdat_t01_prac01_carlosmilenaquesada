@@ -173,9 +173,12 @@ public class PrincipalJFrame extends javax.swing.JFrame {
 
     private void jButtonDirectorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDirectorioActionPerformed
 
-        File ficheroPrincipal = new File(jTextFieldDirectorio.getText());        
+        File ficheroPrincipal = new File(jTextFieldDirectorio.getText());     
+        System.out.println(ficheroPrincipal.getPath());
         File[] subficherosEncontrados = null;
-
+        
+        
+        //Determinamos si el path es un archivo, un directorio o null.
         if (ficheroPrincipal.isDirectory()) {
             subficherosEncontrados = ficheroPrincipal.listFiles();
             jLabelInformacion.setText("La ruta indicada es de un directorio.");
@@ -234,12 +237,18 @@ public class PrincipalJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonDirectorioActionPerformed
 
     private void jButtonExtensionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExtensionActionPerformed
-        String extension = jTextFieldExtension.getText();
+        String extension = jTextFieldExtension.getText().toLowerCase();
 
         for (int i = jTableTabla.getRowCount() - 1; i >= 0; i--) {
 
             String celda = (String) jTableTabla.getValueAt(i, 1);
+            celda = celda.toLowerCase();
 
+            //El siguiente if limpiará de la tabla todas las filas cuya columna
+            //"Extensión" no coincida con lo indicado por el usuario en el campo
+            //de texto "Indique extension", indistintamente si se escribe en 
+            //mayúscula ó minúscula, o si el usuario pone punto (.) antes del 
+            //nombre de la extensión o no.
             if (!celda.equals(extension) && !celda.equals("." + extension)) {
                 dtm.removeRow(i);
             }

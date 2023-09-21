@@ -173,45 +173,26 @@ public class PrincipalJFrame extends javax.swing.JFrame {
 
     private void jButtonDirectorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDirectorioActionPerformed
 
-        File ficheroPrincipal = new File(jTextFieldDirectorio.getText());     
-        System.out.println(ficheroPrincipal.getPath());
-        File[] subficherosEncontrados = null;
-        
-        
-        //Determinamos si el path es un archivo, un directorio o null.
-        if (ficheroPrincipal.isDirectory()) {
-            subficherosEncontrados = ficheroPrincipal.listFiles();
-            jLabelInformacion.setText("La ruta indicada es de un directorio.");
+        File ficheroPrincipal = new File(jTextFieldDirectorio.getText());
+        File[] subficherosEncontrados = ficheroPrincipal.listFiles();
 
+        //Comprobamos si el path es un archivo, un directorio o null.
+        if (subficherosEncontrados == null) {
+            jLabelInformacion.setText("La ruta indicada no es válida.");
         } else {
-            if (ficheroPrincipal.isFile()) {
-                subficherosEncontrados = new File[]{ficheroPrincipal};
-                jLabelInformacion.setText("La ruta indicada pertenece a un "
-                        + "archivo, no un directorio. Igualmente será mostrado.");
-            } else {
-                jLabelInformacion.setText("La ruta indicada no es válida.");
-            }
-        }
-
-        /*En este punto, la colección "File[] subficherosEncontrados" tendrá uno
-        o varios "File" cuando apunta a una caperta, y tendrá solo un "File" si
-        apunta a un archivo.
-        En cualquier caso, el código para mostrar la información en la tabla es
-        el mismo, por eso uso el siguiente foreach para ambos casos.    
-         */
-        if (subficherosEncontrados != null) {
+            jLabelInformacion.setText("");
             for (File f : subficherosEncontrados) {
-                //Obtener el nombre del fichero
+                //Obtener el nombre del fichero actual
                 String nomFichero = f.getName();
 
-                //Obtener la extensión del fichero
+                //Obtener la extensión del fichero actual
                 String tipoFichero = "";
                 int aux = nomFichero.lastIndexOf(".");//Devuelve -1 si no hay punto
                 if (aux != -1) {
                     tipoFichero = nomFichero.substring(aux);
                 }
 
-                //Obtener el tamaño del fichero
+                //Obtener el tamaño del fichero actual
                 long tamanio = 0;
                 try {
                     tamanio = Files.size(f.toPath());
@@ -220,7 +201,7 @@ public class PrincipalJFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, e);
                 }
 
-                //Obtener si es un directorio o un archivo
+                //Obtener si el fichero actual es un directorio o un archivo
                 String directoryOrFile = "";
 
                 if (f.isFile()) {
@@ -229,10 +210,10 @@ public class PrincipalJFrame extends javax.swing.JFrame {
                     directoryOrFile = "Es un directorio";
                 }
 
-                //Agregamos la información de esta fila al Modal de la tabal
+                //Agregamos la información del fichero actual de esta fila al
+                //Modal perteneciente a la tabla
                 dtm.addRow(new String[]{nomFichero, tipoFichero, String.valueOf(tamanio), directoryOrFile});
             }
-
         }
     }//GEN-LAST:event_jButtonDirectorioActionPerformed
 

@@ -171,50 +171,75 @@ public class PrincipalJFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /*SUBFUNCIONES AUXILIARES-------------------------------------------------*/
+    private String obtenerExtension(String nombreFichero) {
+        String tipoFichero = "";
+        int aux = nombreFichero.lastIndexOf(".");//Devuelve -1 si no hay punto
+        if (aux != -1) {
+            tipoFichero = nombreFichero.substring(aux);
+        }
+        return tipoFichero;
+    }
+
+    private String obtenerTamanio(File file) {
+        long tamanio = 0;
+        try {
+            tamanio = Files.size(file.toPath());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+        return String.valueOf(tamanio);
+    }
+
+    private String obtenerD_F(File file) {
+        String directoryOrFile = "";
+
+        if (file.isDirectory()) {
+            directoryOrFile = "Es un directorio";
+        } else {
+            directoryOrFile = "Es un archivo";
+        }
+        return directoryOrFile;
+    }
+
+    private String[] agregarRowATabla(File file) {
+        String nomFichero = file.getName();
+        String extensionFichero = obtenerExtension(nomFichero);
+        String tamanioFichero = obtenerTamanio(file);
+        String directoryOrFile = obtenerD_F(file);
+
+        return new String[]{nomFichero, extensionFichero, tamanioFichero, directoryOrFile};
+    }
+
     private void jButtonDirectorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDirectorioActionPerformed
+        jLabelInformacion.setText("");
 
         File ficheroPrincipal = new File(jTextFieldDirectorio.getText());
-        File[] subficherosEncontrados = ficheroPrincipal.listFiles();
 
-        //Comprobamos si el path es un archivo, un directorio o null.
+        File[] subficherosEncontrados = null;
+
+        if (ficheroPrincipal.isFile()) {
+            subficherosEncontrados = new File[]{ficheroPrincipal};
+            jLabelInformacion.setText("Archivo válido encontrado");
+        } else {
+            if (ficheroPrincipal.isDirectory()) {
+                subficherosEncontrados = ficheroPrincipal.listFiles();
+                jLabelInformacion.setText("Directorio válido encontrado");
+            }
+        }
+
         if (subficherosEncontrados == null) {
             jLabelInformacion.setText("La ruta indicada no es válida.");
         } else {
-            jLabelInformacion.setText("");
-            for (File f : subficherosEncontrados) {
-                //Obtener el nombre del fichero actual
-                String nomFichero = f.getName();
-
-                //Obtener la extensión del fichero actual
-                String tipoFichero = "";
-                int aux = nomFichero.lastIndexOf(".");//Devuelve -1 si no hay punto
-                if (aux != -1) {
-                    tipoFichero = nomFichero.substring(aux);
+            if (subficherosEncontrados.length == 0) {
+                jLabelInformacion.setText("El directorio existe pero está vacío.");
+            } else {
+                for (File f : subficherosEncontrados) {
+                    dtm.addRow(agregarRowATabla(f));
                 }
-
-                //Obtener el tamaño del fichero actual
-                long tamanio = 0;
-                try {
-                    tamanio = Files.size(f.toPath());
-                    //Files.size() es de obligatorio checkeo
-                } catch (IOException e) {
-                    JOptionPane.showMessageDialog(null, e);
-                }
-
-                //Obtener si el fichero actual es un directorio o un archivo
-                String directoryOrFile = "";
-
-                if (f.isFile()) {
-                    directoryOrFile = "Es un archivo";
-                } else {
-                    directoryOrFile = "Es un directorio";
-                }
-
-                //Agregamos la información del fichero actual de esta fila al
-                //Modal perteneciente a la tabla
-                dtm.addRow(new String[]{nomFichero, tipoFichero, String.valueOf(tamanio), directoryOrFile});
             }
         }
+
     }//GEN-LAST:event_jButtonDirectorioActionPerformed
 
     private void jButtonExtensionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExtensionActionPerformed
@@ -224,12 +249,7 @@ public class PrincipalJFrame extends javax.swing.JFrame {
 
             String celda = (String) jTableTabla.getValueAt(i, 1);
             celda = celda.toLowerCase();
-
-            //El siguiente if limpiará de la tabla todas las filas cuya columna
-            //"Extensión" no coincida con lo indicado por el usuario en el campo
-            //de texto "Indique extension", indistintamente si se escribe en 
-            //mayúscula ó minúscula, o si el usuario pone punto (.) antes del 
-            //nombre de la extensión o no.
+            
             if (!celda.equals(extension) && !celda.equals("." + extension)) {
                 dtm.removeRow(i);
             }
@@ -258,16 +278,24 @@ public class PrincipalJFrame extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(PrincipalJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PrincipalJFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(PrincipalJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PrincipalJFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(PrincipalJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PrincipalJFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(PrincipalJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PrincipalJFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
